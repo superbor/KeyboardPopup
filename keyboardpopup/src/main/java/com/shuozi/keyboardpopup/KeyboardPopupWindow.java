@@ -26,10 +26,31 @@ public class KeyboardPopupWindow extends PopupWindow {
     private View parentView;
     private EditText editText;
     private boolean isRandomSort = false;//数字是否随机排序
+
+    private boolean ishasDot = true;//是否包含点
     private List<Integer> list = new ArrayList<>();
     private int[] commonButtonIds = new int[]{R.id.button00, R.id.button01, R.id.button02, R.id.button03,
             R.id.button04, R.id.button05, R.id.button06, R.id.button07, R.id.button08, R.id.button09};
 
+    /**
+     * @param context
+     * @param anchorView
+     * @param editText
+     * @param isRandomSort 数字是否随机排序
+     *  @param ishasDot 是否包含点
+     */
+    public KeyboardPopupWindow(Context context, View anchorView, EditText editText, boolean isRandomSort,boolean ishasDot) {
+        this.context = context;
+        this.anchorView = anchorView;
+        this.editText = editText;
+        this.isRandomSort = isRandomSort;
+        this.ishasDot = ishasDot;
+        if (context == null || anchorView == null) {
+            return;
+        }
+        initConfig();
+        initView();
+    }
     /**
      * @param context
      * @param anchorView
@@ -47,7 +68,6 @@ public class KeyboardPopupWindow extends PopupWindow {
         initConfig();
         initView();
     }
-
 
     private void initConfig() {
         setOutsideTouchable(false);
@@ -128,23 +148,49 @@ public class KeyboardPopupWindow extends PopupWindow {
                 }
             });
         }
-
-        //②给小数点按键设置点击监听
-        view.findViewById(R.id.buttonDot).setOnClickListener(new View.OnClickListener() {
+        editText.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-//                int curSelection = editText.getSelectionStart();
-//                int length = editText.getText().toString().length();
-//                if (curSelection < length) {
-//                    String content = editText.getText().toString();
-//                    editText.setText(content.substring(0, curSelection) + "." + content.subSequence(curSelection, length));
-//                    editText.setSelection(curSelection + 1);
-//                } else {
-//                    editText.setText(editText.getText().toString() + ".");
-//                    editText.setSelection(editText.getText().toString().length());
-//                }
+            public void onClick(View view) {
+
+
+                if (this != null) {
+                  setFocusable(true);//要先让popupwindow获得焦点，才能正确获取popupwindow的状态
+                }
+
+
+                if (!isShowing()) {
+
+                    show();// 需要等待页面创建完成后焦点变化才去显示自定义键盘
+                }else {
+
+                }
+
             }
         });
+        //②给小数点按键设置点击监听
+        Button buttonDot=  (Button)view.findViewById(R.id.buttonDot);
+        if (ishasDot){
+            buttonDot.setText(".");
+            buttonDot.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int curSelection = editText.getSelectionStart();
+                    int length = editText.getText().toString().length();
+                    if (curSelection < length) {
+                        String content = editText.getText().toString();
+                        editText.setText(content.substring(0, curSelection) + "." + content.subSequence(curSelection, length));
+                        editText.setSelection(curSelection + 1);
+                    } else {
+                        editText.setText(editText.getText().toString() + ".");
+                        editText.setSelection(editText.getText().toString().length());
+                    }
+                }
+            });
+        }else {
+
+            buttonDot.setText("");
+        }
+
 
         //③给叉按键设置点击监听
         view.findViewById(R.id.buttonCross).setOnClickListener(new View.OnClickListener() {
