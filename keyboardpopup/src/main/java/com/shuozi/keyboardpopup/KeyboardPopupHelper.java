@@ -9,4 +9,10 @@ public class KeyboardPopupHelper {
         }
         return false;
     }
+
+    public static void releaseResources(KeyboardPopupWindow keyboardPopupWindow) {
+        if (keyboardPopupWindow != null) {
+            keyboardPopupWindow.releaseResources();
+        }
+    }
 }
